@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: algolearn
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/algolearn}
+
+  # CORS is handled in config/CorsConfig.java for the React dev server
+logging:
+  level:
+    com.lms.algolearn: INFO
