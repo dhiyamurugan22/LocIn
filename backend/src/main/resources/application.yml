@@ -1,0 +1,13 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: template-customization-module
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/eduapp}
+
+logging:
+  level:
+    com.eduapp.templatecustomization: INFO
