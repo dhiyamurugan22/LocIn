@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notes Module</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>📒 My Study Notes</h1>
+      <div class="student-switch">
+        <label for="studentId">Student ID</label>
+        <input id="studentId" type="text" value="student-101" />
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <input id="searchInput" type="text" placeholder="Search notes by title, content or tag..." />
+      <select id="categoryFilter"><option value="">All categories</option></select>
+      <select id="courseFilter"><option value="">All courses</option></select>
+      <label class="fav-toggle">
+        <input type="checkbox" id="favOnly" /> ⭐ Favorites only
+      </label>
+      <select id="sortSelect">
+        <option value="">Recently updated</option>
+        <option value="created_desc">Newest first</option>
+        <option value="created_asc">Oldest first</option>
+        <option value="title_asc">Title (A–Z)</option>
+        <option value="title_desc">Title (Z–A)</option>
+      </select>
+      <button id="newNoteBtn">+ New Note</button>
+    </section>
+
+    <main class="main-grid">
+      <section id="notesList" class="notes-list"></section>
+
+      <aside class="editor-panel" id="editorPanel" hidden>
+        <h2 id="editorTitleLabel">New Note</h2>
+        <input id="noteTitle" type="text" placeholder="Title" />
+        <div class="row">
+          <input id="noteCourse" type="text" placeholder="Course" />
+          <input id="noteModule" type="text" placeholder="Module" />
+        </div>
+        <div class="row">
+          <input id="noteTopic" type="text" placeholder="Topic" />
+          <input id="noteCategory" type="text" placeholder="Category (e.g. Concept, Doubt, Example)" />
+        </div>
+        <input id="noteTags" type="text" placeholder="Tags (comma separated)" />
+        <textarea id="noteContent" rows="10" placeholder="Write your note here..."></textarea>
+        <label class="fav-toggle">
+          <input type="checkbox" id="noteFavorite" /> Mark as important ⭐
+        </label>
+        <div class="editor-actions">
+          <button id="saveNoteBtn">Save</button>
+          <button id="cancelEditBtn" class="secondary">Cancel</button>
+          <button id="deleteNoteBtn" class="danger" hidden>Delete</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
