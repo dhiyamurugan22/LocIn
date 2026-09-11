@@ -106,14 +106,19 @@ export default function OnboardingWizard({ onComplete }) {
   const [authData, setAuthData] = useState({ username: '', email: '', password: '' });
   const [authUser, setAuthUser] = useState(null);
 
-  // Expanded Background Analysis State
+  // Expanded Background Analysis State with "None" and "Other" options for all questions
   const [analysisData, setAnalysisData] = useState({
     fieldOfStudy: 'Computer Science & Engineering',
-    comfortableLanguage: 'Java',
-    academicYear: '3rd Year',
+    customFieldOfStudy: '',
+    spokenLanguage: 'English',
+    customSpokenLanguage: '',
+    programmingLanguage: 'Java',
+    customProgrammingLanguage: '',
+    academicYear: '3rd Year Undergraduate',
+    customAcademicYear: '',
     targetRole: 'Software Engineer / Backend Developer',
+    customTargetRole: '',
     experienceLevel: 'beginner', // 'beginner' | 'non-beginner'
-    studyHoursPerWeek: '10-20',
   });
 
   // Algorithm Test State
@@ -132,6 +137,14 @@ export default function OnboardingWizard({ onComplete }) {
 
   const handleAnalysisSubmit = (e) => {
     e.preventDefault();
+
+    // Store chosen target spoken language into localStorage for Inline Translation
+    const targetSpokenLang =
+      analysisData.spokenLanguage === 'Other'
+        ? 'es'
+        : analysisData.spokenLanguage.toLowerCase().slice(0, 2);
+    localStorage.setItem('locin_target_lang', targetSpokenLang || 'es');
+
     if (analysisData.experienceLevel === 'beginner') {
       setStep('learn');
     } else {
@@ -188,7 +201,7 @@ export default function OnboardingWizard({ onComplete }) {
         className="glass-panel"
         style={{
           width: '100%',
-          maxWidth: '780px',
+          maxWidth: '820px',
           borderRadius: 'var(--radius-lg)',
           padding: '2.5rem',
           boxShadow: 'var(--shadow-glow)',
@@ -200,11 +213,11 @@ export default function OnboardingWizard({ onComplete }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <GraduationCap size={32} color="var(--accent-primary)" />
             <h1 style={{ fontSize: '1.75rem', fontWeight: '800' }} className="gradient-text">
-              LockIn Onboarding & Background Analysis
+              LockIn Onboarding & Background Profiler
             </h1>
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Personalizing your study profile and algorithm qualification path.
+            Tailoring your student profile and algorithm qualification path.
           </p>
 
           <div
@@ -218,7 +231,7 @@ export default function OnboardingWizard({ onComplete }) {
           >
             {[
               { key: 'auth', label: '1. Sign In' },
-              { key: 'analysis', label: '2. Analysis' },
+              { key: 'analysis', label: '2. Background' },
               { key: 'learn', label: '3. Learn Algo' },
               { key: 'test', label: '4. Algo Test' },
               { key: 'result', label: '5. Unlock Gate' },
@@ -267,7 +280,7 @@ export default function OnboardingWizard({ onComplete }) {
               {isRegister ? 'Step 1: Create Student Account' : 'Step 1: Sign In to LockIn'}
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '1.5rem' }}>
-              Sign in or create your student profile to start background analysis.
+              Sign in or create your student account to start background analysis.
             </p>
 
             <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '480px', margin: '0 auto' }}>
@@ -367,125 +380,256 @@ export default function OnboardingWizard({ onComplete }) {
           </div>
         )}
 
-        {/* STEP 2: EXPANDED BACKGROUND ANALYSIS */}
+        {/* STEP 2: EXPANDED BACKGROUND ANALYSIS (WITH NONE & OTHER OPTIONS) */}
         {step === 'analysis' && (
           <div>
             <h2 style={{ fontSize: '1.35rem', fontWeight: '800', marginBottom: '0.5rem', textAlign: 'center' }}>
-              Step 2: Background Analysis & Skill Profiler
+              Step 2: Background Analysis & Profiler
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '1.5rem' }}>
-              Tell us about your field of study, preferred language, and experience level.
+              Answer these background questions. Every question includes <strong>None</strong> and <strong>Other</strong> options.
             </p>
 
-            <form onSubmit={handleAnalysisSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '580px', margin: '0 auto' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
-                    What are you studying?
-                  </label>
-                  <select
-                    value={analysisData.fieldOfStudy}
-                    onChange={(e) => setAnalysisData({ ...analysisData, fieldOfStudy: e.target.value })}
+            <form onSubmit={handleAnalysisSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '640px', margin: '0 auto' }}>
+              {/* Question 1: Field of Study */}
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                  1. What field are you studying?
+                </label>
+                <select
+                  value={analysisData.fieldOfStudy}
+                  onChange={(e) => setAnalysisData({ ...analysisData, fieldOfStudy: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="AI & Data Science">AI & Data Science</option>
+                  <option value="Electronics & Communication">Electronics & Communication</option>
+                  <option value="High School / Pre-College">High School / Pre-College</option>
+                  <option value="None">None (Not currently studying a formal degree)</option>
+                  <option value="Other">Other (Specify below)</option>
+                </select>
+                {analysisData.fieldOfStudy === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Specify your field of study..."
+                    value={analysisData.customFieldOfStudy}
+                    onChange={(e) => setAnalysisData({ ...analysisData, customFieldOfStudy: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.75rem',
+                      marginTop: '0.5rem',
+                      padding: '0.6rem',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: 'var(--bg-tertiary)',
                       border: '1px solid var(--border-color)',
                       color: 'var(--text-primary)',
-                      outline: 'none',
+                      fontSize: '0.85rem',
                     }}
-                  >
-                    <option value="Computer Science & Engineering">Computer Science & Engineering</option>
-                    <option value="Information Technology">Information Technology</option>
-                    <option value="AI & Data Science">AI & Data Science</option>
-                    <option value="Electronics & Communication">Electronics & Communication</option>
-                    <option value="High School / Pre-College">High School / Pre-College</option>
-                    <option value="Self-Taught / Bootcamp">Self-Taught / Bootcamp</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
-                    Comfortable Programming Language
-                  </label>
-                  <select
-                    value={analysisData.comfortableLanguage}
-                    onChange={(e) => setAnalysisData({ ...analysisData, comfortableLanguage: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      borderRadius: 'var(--radius-md)',
-                      backgroundColor: 'var(--bg-tertiary)',
-                      border: '1px solid var(--border-color)',
-                      color: 'var(--text-primary)',
-                      outline: 'none',
-                    }}
-                  >
-                    <option value="Java">Java</option>
-                    <option value="C++">C++</option>
-                    <option value="Python">Python</option>
-                    <option value="JavaScript/TypeScript">JavaScript / TypeScript</option>
-                    <option value="Go">Go</option>
-                    <option value="Rust">Rust</option>
-                  </select>
-                </div>
+                  />
+                )}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
-                    Academic Level / Year
-                  </label>
-                  <select
-                    value={analysisData.academicYear}
-                    onChange={(e) => setAnalysisData({ ...analysisData, academicYear: e.target.value })}
+              {/* Question 2: Spoken / Native Language */}
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                  2. What primary Spoken / Native Language do you communicate in?
+                </label>
+                <select
+                  value={analysisData.spokenLanguage}
+                  onChange={(e) => setAnalysisData({ ...analysisData, spokenLanguage: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="English">English</option>
+                  <option value="Hindi">Hindi (हिन्दी)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Malayalam">Malayalam (മലയാളം)</option>
+                  <option value="Kannada">Kannada (கன்னடம்)</option>
+                  <option value="Spanish">Spanish (Español)</option>
+                  <option value="French">French (Français)</option>
+                  <option value="German">German (Deutsch)</option>
+                  <option value="Mandarin">Mandarin (中文)</option>
+                  <option value="None">None</option>
+                  <option value="Other">Other (Specify below)</option>
+                </select>
+                {analysisData.spokenLanguage === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Specify your primary spoken language..."
+                    value={analysisData.customSpokenLanguage}
+                    onChange={(e) => setAnalysisData({ ...analysisData, customSpokenLanguage: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.75rem',
+                      marginTop: '0.5rem',
+                      padding: '0.6rem',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: 'var(--bg-tertiary)',
                       border: '1px solid var(--border-color)',
                       color: 'var(--text-primary)',
-                      outline: 'none',
+                      fontSize: '0.85rem',
                     }}
-                  >
-                    <option value="1st Year Undergraduate">1st Year Undergraduate</option>
-                    <option value="2nd Year Undergraduate">2nd Year Undergraduate</option>
-                    <option value="3rd Year Undergraduate">3rd Year Undergraduate</option>
-                    <option value="4th Year / Final Year">4th Year / Final Year</option>
-                    <option value="Postgraduate / Master's">Postgraduate / Master's</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
-                    Target Career Goal
-                  </label>
-                  <select
-                    value={analysisData.targetRole}
-                    onChange={(e) => setAnalysisData({ ...analysisData, targetRole: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      borderRadius: 'var(--radius-md)',
-                      backgroundColor: 'var(--bg-tertiary)',
-                      border: '1px solid var(--border-color)',
-                      color: 'var(--text-primary)',
-                      outline: 'none',
-                    }}
-                  >
-                    <option value="Software Engineer / Backend">Software Engineer / Backend</option>
-                    <option value="Full Stack Web Engineer">Full Stack Web Engineer</option>
-                    <option value="AI / Data Engineer">AI / Data Engineer</option>
-                    <option value="Competitive Programmer">Competitive Programmer</option>
-                  </select>
-                </div>
+                  />
+                )}
               </div>
 
+              {/* Question 3: Programming Language Preference */}
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                  3. Which Programming Language are you comfortable with?
+                </label>
+                <select
+                  value={analysisData.programmingLanguage}
+                  onChange={(e) => setAnalysisData({ ...analysisData, programmingLanguage: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="Java">Java</option>
+                  <option value="C++">C++</option>
+                  <option value="Python">Python</option>
+                  <option value="JavaScript/TypeScript">JavaScript / TypeScript</option>
+                  <option value="Go">Go</option>
+                  <option value="Rust">Rust</option>
+                  <option value="None">None (I don't know any programming language yet)</option>
+                  <option value="Other">Other (Specify below)</option>
+                </select>
+                {analysisData.programmingLanguage === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Specify programming language..."
+                    value={analysisData.customProgrammingLanguage}
+                    onChange={(e) => setAnalysisData({ ...analysisData, customProgrammingLanguage: e.target.value })}
+                    style={{
+                      width: '100%',
+                      marginTop: '0.5rem',
+                      padding: '0.6rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.85rem',
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Question 4: Academic Level / Year */}
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                  4. Academic Level / Year
+                </label>
+                <select
+                  value={analysisData.academicYear}
+                  onChange={(e) => setAnalysisData({ ...analysisData, academicYear: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="1st Year Undergraduate">1st Year Undergraduate</option>
+                  <option value="2nd Year Undergraduate">2nd Year Undergraduate</option>
+                  <option value="3rd Year Undergraduate">3rd Year Undergraduate</option>
+                  <option value="4th Year / Final Year">4th Year / Final Year</option>
+                  <option value="Postgraduate / Master's">Postgraduate / Master's</option>
+                  <option value="None">None (Not enrolled in an academic program)</option>
+                  <option value="Other">Other (Specify below)</option>
+                </select>
+                {analysisData.academicYear === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Specify academic year..."
+                    value={analysisData.customAcademicYear}
+                    onChange={(e) => setAnalysisData({ ...analysisData, customAcademicYear: e.target.value })}
+                    style={{
+                      width: '100%',
+                      marginTop: '0.5rem',
+                      padding: '0.6rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.85rem',
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Question 5: Target Career Role */}
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                  5. Target Career Goal
+                </label>
+                <select
+                  value={analysisData.targetRole}
+                  onChange={(e) => setAnalysisData({ ...analysisData, targetRole: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="Software Engineer / Backend Developer">Software Engineer / Backend Developer</option>
+                  <option value="Full Stack Web Developer">Full Stack Web Developer</option>
+                  <option value="AI / Data Engineer">AI / Data Engineer</option>
+                  <option value="Competitive Programmer">Competitive Programmer</option>
+                  <option value="None">None (Exploring general knowledge)</option>
+                  <option value="Other">Other (Specify below)</option>
+                </select>
+                {analysisData.targetRole === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Specify target career goal..."
+                    value={analysisData.customTargetRole}
+                    onChange={(e) => setAnalysisData({ ...analysisData, customTargetRole: e.target.value })}
+                    style={{
+                      width: '100%',
+                      marginTop: '0.5rem',
+                      padding: '0.6rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.85rem',
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Question 6: DSA Experience Level */}
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.5rem', display: 'block' }}>
-                  Self-Assessed Experience Level with Data Structures & Algorithms
+                  6. Self-Assessed Experience Level with Data Structures & Algorithms
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div
@@ -553,7 +697,7 @@ export default function OnboardingWizard({ onComplete }) {
               Step 3: Algorithm Learning Essentials
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '1.5rem' }}>
-              Review these core algorithm concepts tailored for <strong>{analysisData.comfortableLanguage}</strong>.
+              Review these core algorithm concepts tailored for <strong>{analysisData.programmingLanguage}</strong>.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
