@@ -1,6 +1,6 @@
 /**
  * LocIn API Gateway & Centralized Service Config
- * Handles requests to Spring Boot Microservices with LLM-style Intelligence Engine.
+ * Handles requests to Spring Boot Microservices with Conversational Intelligence Engine.
  */
 
 const API_BASE_URLS = {
@@ -60,19 +60,19 @@ export const UserService = {
 };
 
 /**
- * Real ChatGPT / Claude-style Conversational Intelligence Engine
+ * Intelligent Conversational AI Engine
  */
-function generateChatGPTStyleAnswer(prompt) {
+function generateAIAnswer(prompt) {
   const clean = prompt.trim();
   const q = clean.toLowerCase();
 
   // 1. Greetings & Conversational Openers
   if (/^(hi+|hello+|hey+|hola|yo|good morning|good evening|greetings)/i.test(clean)) {
-    return `Hello! 👋 I am your **LockIn AI Assistant**, built to function like ChatGPT and Claude for your learning journey.\n\nHow can I help you today? You can ask me:\n- To write or debug code in any language (Java, Python, C++, JS, Rust, Go, SQL)\n- To explain complex computer science concepts, algorithms, or math\n- System design, database architecture, or web dev best practices\n- Career advice, interview prep, or resume suggestions!`;
+    return `Hello! 👋 I am your **LockIn AI Assistant**.\n\nHow can I help you today? You can ask me:\n- To write or debug code in any language (Java, Python, C++, JS, Rust, Go, SQL)\n- To explain complex computer science concepts, algorithms, or math\n- System design, database architecture, or web dev best practices\n- Career advice, interview prep, or resume suggestions!`;
   }
 
   if (q.includes('who are you') || q.includes('what are you') || q.includes('your name')) {
-    return `I am your **LockIn AI Assistant**! I am designed to act like ChatGPT/Claude—a versatile, intelligent conversational assistant focused on computer science, programming, software engineering, and academic guidance. Ask me anything!`;
+    return `I am your **LockIn AI Assistant**! I am an intelligent conversational assistant focused on computer science, programming, software engineering, and academic guidance. Ask me anything!`;
   }
 
   if (q.includes('how are you')) {
@@ -107,7 +107,7 @@ function generateChatGPTStyleAnswer(prompt) {
     return `### Explanation for "${clean}"\n\nHere is a clear, step-by-step breakdown:\n\n1. **Core Concept**:\n   At a high level, **${clean}** focuses on organizing data structures or control flow to achieve optimal, predictable performance.\n\n2. **Why It Matters**:\n   Understanding this concept helps you write scalable software, prevent race conditions, and pass technical architecture interviews.\n\n3. **Practical Example**:\n   When implementing this in production, ensure you validate input parameters, handle null/undefined checks, and consider algorithmic Big-O tradeoffs.\n\nWould you like me to generate a concrete code sample or deep-dive into an edge case?`;
   }
 
-  // 4. General Knowledge & Universal ChatGPT/Claude Fallback
+  // 4. General Knowledge & Fallback Response
   return `Here is a detailed answer to your query: **"${clean}"**\n\n### Overview\n${clean} is an important topic. When evaluating this:\n1. **Fundamental Principle**: Focus on the core objective and break down sub-problems logically.\n2. **Best Practices**: Maintain clean architecture, avoid redundant computations, and verify edge cases.\n3. **Application**: Apply this pattern in real-world software engineering, algorithm problem-solving, or system design.\n\nLet me know if you would like me to expand on any specific aspect, write code, or give a real-world example!`;
 }
 
@@ -119,9 +119,9 @@ export const AIService = {
         body: JSON.stringify({ question, context }),
       });
     } catch {
-      // ChatGPT / Claude-style conversational response engine
+      // Conversational response engine
       return {
-        answer: generateChatGPTStyleAnswer(question),
+        answer: generateAIAnswer(question),
         timestamp: new Date().toISOString(),
       };
     }
