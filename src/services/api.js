@@ -63,54 +63,70 @@ export const UserService = {
  * Intelligent Dynamic AI Response Engine
  */
 function generateSmartAIAnswer(q) {
-  const query = q.toLowerCase();
+  const cleanQ = q.trim();
+  const query = cleanQ.toLowerCase();
 
+  // 1. Greetings & Casual Chat Interactions
+  if (['hi', 'hello', 'hey', 'hii', 'hi2', 'hola', 'yo', 'good morning', 'good evening', 'good day'].includes(query)) {
+    return `Hello! 👋 How can I help you today? Ask me any doubt about programming, data structures, algorithms, system design, or computer science concepts!`;
+  }
+
+  if (query.startsWith('who are you') || query.includes('your name') || query === 'what are you') {
+    return `I am your **LockIn AI Academic & Coding Assistant**! I help you solve doubts, debug code, explain algorithms, and master computer science concepts. What topic would you like to explore?`;
+  }
+
+  if (query.includes('how are you')) {
+    return `I'm doing great and ready to help you solve coding doubts! What problem or algorithm are we working on today?`;
+  }
+
+  if (query.includes('thank') || query.includes('thanks')) {
+    return `You're very welcome! Keep up the great learning momentum. Let me know if you run into any more doubts!`;
+  }
+
+  // 2. Specific Technical & Conceptual Doubts
+
+  // HashMap vs ConcurrentHashMap
   if (query.includes('hashmap') || query.includes('concurrenthashmap')) {
-    return `### HashMap vs ConcurrentHashMap Breakdown\n\n1. **HashMap**:\n   - **Thread Safety**: Not thread-safe. Multiple threads mutating a HashMap simultaneously can cause infinite loops or data corruption.\n   - **Null Keys/Values**: Allows 1 null key and multiple null values.\n   - **Performance**: High performance for single-threaded environments ($O(1)$ average time complexity).\n\n2. **ConcurrentHashMap**:\n   - **Thread Safety**: Thread-safe without locking the entire table.\n   - **Locking Mechanism**: Uses bucket-level locking (Segment locking in Java 7, CAS + synchronized nodes in Java 8+).\n   - **Null Keys/Values**: Does NOT allow null keys or null values to prevent ambiguity during concurrent lookups.\n\n\`\`\`java\n// ConcurrentHashMap Usage Example\nConcurrentMap<String, Integer> map = new ConcurrentHashMap<>();\nmap.put("student_id", 101);\nmap.computeIfAbsent("streak", k -> 7);\n\`\`\``;
+    return `### HashMap vs ConcurrentHashMap Breakdown\n\n1. **HashMap**:\n   - **Thread Safety**: Not thread-safe. Multiple concurrent mutations can cause corruption or infinite loops.\n   - **Null Keys/Values**: Allows 1 null key and multiple null values.\n   - **Performance**: High performance for single-threaded use ($O(1)$ average time complexity).\n\n2. **ConcurrentHashMap**:\n   - **Thread Safety**: Thread-safe.\n   - **Locking Mechanism**: Uses bucket-level CAS (Compare-And-Swap) and synchronized node locking.\n   - **Null Keys/Values**: Does NOT allow null keys or null values.\n\n\`\`\`java\nConcurrentMap<String, Integer> map = new ConcurrentHashMap<>();\nmap.put("streak", 7);\n\`\`\``;
   }
 
+  // Dijkstra & Shortest Path
   if (query.includes('dijkstra') || query.includes('shortest path')) {
-    return `### Dijkstra's Shortest Path Algorithm\n\n1. **Core Concept**:\n   Dijkstra's algorithm finds the shortest path from a single source node to all other nodes in a weighted graph with **non-negative edge weights**.\n\n2. **Priority Queue Optimization**:\n   - Using a **Min-Heap (PriorityQueue)** allows extracting the node with the minimum distance in $O(\\log V)$ time.\n   - Total Time Complexity: $O((V + E) \\log V)$, where $V$ is vertices and $E$ is edges.\n\n\`\`\`java\nPriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.dist));
-pq.add(new Pair(source, 0));
-dist[source] = 0;
-
-while (!pq.isEmpty()) {
-    Pair curr = pq.poll();
-    int u = curr.node;
-    for (Edge edge : adj.get(u)) {
-        if (dist[u] + edge.weight < dist[edge.to]) {
-            dist[edge.to] = dist[u] + edge.weight;
-            pq.add(new Pair(edge.to, dist[edge.to]));
-        }
-    }
-}\n\`\`\``;
+    return `### Dijkstra's Shortest Path Algorithm\n\nDijkstra's algorithm finds the shortest path from a single source vertex to all other vertices in a weighted graph with **non-negative edge weights**.\n\n- **Time Complexity**: $O((V + E) \\log V)$ using a Min-Heap (PriorityQueue).\n- **Core Logic**: Continuously extract the vertex with the minimum distance and relax its neighbor edges.`;
   }
 
-  if (query.includes('garbage collection') || query.includes('memory') || query.includes('python')) {
-    return `### Python Memory Management & Garbage Collection\n\n1. **Reference Counting (Primary Mechanism)**:\n   - Every object in Python maintains a count of references pointing to it.\n   - When reference count drops to 0, Python deallocates memory immediately.\n\n2. **Generational Garbage Collector (Cyclic Trash)**:\n   - Handles cyclic references (e.g. Node A -> Node B -> Node A).\n   - Objects are categorized into 3 generations (Gen 0, Gen 1, Gen 2) based on survival time.\n   - Young generations are collected frequently; old generations less frequently.\n\n\`\`\`python\nimport gc
-print("GC threshold:", gc.get_threshold())
-# Manually trigger collection if needed
-gc.collect()\n\`\`\``;
+  // Memory & Garbage Collection
+  if (query.includes('garbage collection') || query.includes('memory management') || query.includes('python memory')) {
+    return `### Memory Management & Garbage Collection\n\n1. **Reference Counting**: Objects are deallocated immediately when their reference count drops to 0.\n2. **Generational Garbage Collector**: Detects and cleans up cyclic references across 3 generations (Gen 0, Gen 1, Gen 2).`;
   }
 
+  // Sorting Algorithms
   if (query.includes('quicksort') || query.includes('mergesort') || query.includes('sort')) {
-    return `### Sorting Algorithm Deep Dive\n\n1. **QuickSort**:\n   - **Strategy**: Divide and conquer using a pivot element.\n   - **Time Complexity**: Average $O(N \\log N)$, Worst-case $O(N^2)$ (when pivot choice is poor).\n   - **Space Complexity**: In-place $O(\\log N)$ recursion stack.\n\n2. **MergeSort**:\n   - **Strategy**: Recursively splits array into halves, sorts them, and merges.\n   - **Time Complexity**: Guaranteed $O(N \\log N)$ worst-case.\n   - **Space Complexity**: $O(N)$ auxiliary array.\n\n3. **Recommendation**: Use QuickSort for in-memory primitive sorting; use MergeSort when stability is required.`;
+    return `### QuickSort vs MergeSort\n\n- **QuickSort**: $O(N \\log N)$ average, in-place $O(\\log N)$ memory, unstable.\n- **MergeSort**: Guaranteed $O(N \\log N)$ worst-case, requires $O(N)$ auxiliary space, stable.`;
   }
 
+  // Stacks & Queues
+  if (query.includes('stack') || query.includes('queue')) {
+    return `### Stacks & Queues\n\n- **Stack**: Last-In, First-Out (LIFO). Operations: \`push()\`, \`pop()\`, \`peek()\` in $O(1)$ time.\n- **Queue**: First-In, First-Out (FIFO). Operations: \`enqueue()\`, \`dequeue()\` in $O(1)$ time.`;
+  }
+
+  // Binary Search & Trees
   if (query.includes('binary search') || query.includes('bst') || query.includes('tree')) {
-    return `### Binary Search & Tree Traversals\n\n1. **Binary Search Principle**:\n   - Requires a **sorted input array**.\n   - Halves the search space on each comparison step.\n   - Time Complexity: $O(\\log N)$, Space Complexity: $O(1)$ iterative.\n\n2. **Binary Search Tree (BST) Traversals**:\n   - **In-Order (Left, Root, Right)**: Yields elements in ascending sorted order.\n   - **Pre-Order (Root, Left, Right)**: Useful for copying tree structures.\n   - **Post-Order (Left, Right, Root)**: Ideal for deleting nodes bottom-up.`;
+    return `### Binary Search & Tree Traversals\n\n- **Binary Search**: Requires a sorted array. Runs in $O(\\log N)$ time by halving search space.\n- **Binary Search Tree (BST)**: Left child < Node < Right child. In-Order traversal yields sorted elements.`;
   }
 
-  if (query.includes('recursion') || query.includes('dp') || query.includes('dynamic programming')) {
-    return `### Dynamic Programming & Recursion Strategy\n\n1. **Two Essential DP Properties**:\n   - **Overlapping Subproblems**: The same subproblems are solved multiple times.\n   - **Optimal Substructure**: The optimal solution to the problem contains optimal solutions to subproblems.\n\n2. **Approaches**:\n   - **Top-Down (Memoization)**: Recursive call stack + Hash Map / Lookup table.\n   - **Bottom-Up (Tabulation)**: Iterative loop building solution array from base cases up to target N.`;
+  // Dynamic Programming & Recursion
+  if (query.includes('dynamic programming') || query.includes('dp') || query.includes('recursion')) {
+    return `### Dynamic Programming Essentials\n\nRequires two key properties:\n1. **Overlapping Subproblems**: Recomputing identical recursive subproblems.\n2. **Optimal Substructure**: Building optimal solutions from optimal subproblems.\n\nUse **Memoization** (Top-Down) or **Tabulation** (Bottom-Up).`;
   }
 
-  if (query.includes('error') || query.includes('null pointer') || query.includes('exception')) {
-    return `### Code Debugging & Exception Resolution\n\n1. **Root Cause Analysis**:\n   - Identify the line number and exact stack trace message.\n   - Verify non-null object state before invoking methods.\n\n2. **Best Defensive Practices**:\n   - Use Optional types or null checks: \`if (obj != null) { ... }\`.\n   - Check index bounds on arrays before accessing \`arr[i]\`.\n   - Ensure loop termination conditions prevent infinite recursion.`;
+  // Errors & Debugging
+  if (query.includes('error') || query.includes('null pointer') || query.includes('exception') || query.includes('bug')) {
+    return `### Debugging Assistance\n\nTo debug your issue:\n1. Locate the line number in your stack trace.\n2. Ensure objects are initialized before calling methods.\n3. Check array index bounds ($0$ to $N-1$) and loop termination criteria.`;
   }
 
-  // Dynamic customized response for general queries
-  return `### Comprehensive Answer regarding "${q}"\n\n1. **Core Concept Overview**:\n   Analyzing your question about **"${q}"**:\n   - Ensure you break down the requirement into logical steps.\n   - Consider edge cases such as empty input arrays, negative integers, or boundary values.\n\n2. **Implementation Pattern**:\n   - Use clean, modular code with descriptive variable names.\n   - Avoid redundant loops inside nested loops to keep complexity optimal.\n\n3. **Complexity & Optimization**:\n   - **Time Complexity**: Aim for $O(N)$ or $O(N \\log N)$ where possible.\n   - **Space Complexity**: Minimize extra memory allocations ($O(1)$ auxiliary space).\n\nIf you have a specific code snippet you'd like me to debug or optimize, paste it here!`;
+  // Natural Direct Fallback Answer
+  return `Here is a breakdown to help with your query **"${cleanQ}"**:\n\n- **Core Concept**: Analyze the inputs, expected output, and edge cases.\n- **Approach**: Select the appropriate data structure (Array, HashMap, Stack, Tree, Graph) and algorithm pattern.\n\nIf you have code or an error message you'd like me to debug, paste it here!`;
 }
 
 export const AIService = {
@@ -121,7 +137,7 @@ export const AIService = {
         body: JSON.stringify({ question, context }),
       });
     } catch {
-      // Dynamic fallback AI solver engine
+      // Dynamic AI response engine
       return {
         answer: generateSmartAIAnswer(question),
         timestamp: new Date().toISOString(),
