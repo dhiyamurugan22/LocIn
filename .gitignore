@@ -2,6 +2,7 @@
 node_modules
 frontend/node_modules/
 .pnpm-store
+.vite
 
 # Build output
 dist

@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Code2,
   BookOpen,
+  BookMarked,
   Bot,
   Cpu,
   Flame,
@@ -14,29 +15,19 @@ import {
   Menu,
   X,
   Award,
-  LogOut
+  LogOut,
+  Palette
 } from 'lucide-react';
 import SettingsModal from '../components/SettingsModal';
 
 export default function MainLayout({ user, onLogout }) {
-  const [theme, setTheme] = useState('dark');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    if (nextTheme === 'light') {
-      document.body.classList.add('light-theme');
-    } else {
-      document.body.classList.remove('light-theme');
-    }
-  };
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: 'Overview' },
+    { path: '/notes', label: 'Student Notes', icon: BookMarked, badge: 'Organized Notebook' },
     { path: '/courses', label: 'Courses & Templates', icon: BookOpen, badge: 'Syllabus & Code' },
     { path: '/practice', label: 'Coding Practice', icon: Code2, badge: 'LeetCode / GFG' },
     { path: '/algorithms', label: 'Algorithm Visualizer', icon: Cpu, badge: 'Interactive' },
@@ -45,7 +36,7 @@ export default function MainLayout({ user, onLogout }) {
 
   const getPageTitle = () => {
     const current = navItems.find((item) => item.path === location.pathname);
-    return current ? current.label : 'LockIn Hub Platform';
+    return current ? current.label : 'LockIn Platform';
   };
 
   return (
@@ -275,7 +266,7 @@ export default function MainLayout({ user, onLogout }) {
               <Search size={16} />
               <input
                 type="text"
-                placeholder="Search topics, questions..."
+                placeholder="Search topics, notes..."
                 style={{
                   background: 'none',
                   border: 'none',
@@ -313,7 +304,7 @@ export default function MainLayout({ user, onLogout }) {
                 {user?.name ? user.name[0].toUpperCase() : 'S'}
               </div>
 
-              {/* Settings Gear Icon Beside Student Profile */}
+              {/* Settings & Template Customizer Icon */}
               <button
                 onClick={() => setIsSettingsOpen(true)}
                 style={{
@@ -327,7 +318,7 @@ export default function MainLayout({ user, onLogout }) {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                title="Open Settings & Sentence Translator"
+                title="Settings & App Layout Customizer"
               >
                 <Settings size={18} />
               </button>
@@ -341,12 +332,10 @@ export default function MainLayout({ user, onLogout }) {
         </main>
       </div>
 
-      {/* Settings Modal (Sentence Translator & Preferences) */}
+      {/* Settings Modal (App Layout Customizer & Inline Translation Config) */}
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        theme={theme}
-        toggleTheme={toggleTheme}
         user={user}
       />
     </div>

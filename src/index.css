@@ -1,22 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
 
 :root {
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Fira Code', monospace;
 
-  /* Theme colors - Dark mode default */
-  --bg-primary: #0b0f19;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1f2937;
-  --bg-glass: rgba(17, 24, 39, 0.75);
-  --bg-card: rgba(31, 41, 55, 0.6);
+  /* Theme colors - Default Midnight Studio */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-glass: rgba(30, 41, 59, 0.8);
+  --bg-card: rgba(51, 65, 85, 0.6);
   
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(99, 102, 241, 0.4);
 
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   /* Accents */
   --accent-primary: #6366f1;
@@ -28,8 +29,8 @@
   --accent-rose: #f43f5e;
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.35);
 
   --radius-sm: 0.375rem;
@@ -38,11 +39,33 @@
   --radius-full: 9999px;
 }
 
-.light-theme {
+/* Template 1: Cyberpunk Neon Matrix */
+.template-cyberpunk {
+  --bg-primary: #05050b;
+  --bg-secondary: #0d0e1b;
+  --bg-tertiary: #17192e;
+  --bg-glass: rgba(13, 14, 27, 0.85);
+  --bg-card: rgba(23, 25, 46, 0.7);
+
+  --border-color: rgba(6, 182, 212, 0.25);
+  --border-hover: rgba(236, 72, 153, 0.6);
+
+  --text-primary: #ffffff;
+  --text-secondary: #a5f3fc;
+  --text-muted: #475569;
+
+  --accent-primary: #06b6d4;
+  --accent-primary-hover: #0891b2;
+  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #ec4899 100%);
+  --shadow-glow: 0 0 22px rgba(6, 182, 212, 0.45);
+}
+
+/* Template 2: Nordic Clean Light */
+.template-nordic {
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
-  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.9);
   --bg-card: #ffffff;
 
   --border-color: #e2e8f0;
@@ -52,10 +75,31 @@
   --text-secondary: #475569;
   --text-muted: #94a3b8;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+  --accent-primary: #0d9488;
+  --accent-primary-hover: #0f766e;
+  --accent-gradient: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+  --shadow-glow: 0 0 18px rgba(13, 148, 136, 0.2);
+}
+
+/* Template 3: Emerald Hacker Terminal Mode */
+.template-hacker {
+  --bg-primary: #030712;
+  --bg-secondary: #0b1329;
+  --bg-tertiary: #111e38;
+  --bg-glass: rgba(11, 19, 41, 0.85);
+  --bg-card: rgba(17, 30, 56, 0.7);
+
+  --border-color: rgba(16, 185, 129, 0.3);
+  --border-hover: rgba(16, 185, 129, 0.6);
+
+  --text-primary: #ecfdf5;
+  --text-secondary: #6ee7b7;
+  --text-muted: #34d399;
+
+  --accent-primary: #10b981;
+  --accent-primary-hover: #059669;
+  --accent-gradient: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 * {
@@ -71,6 +115,7 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -103,6 +148,7 @@ h1, h2, h3, h4, h5, h6 {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
+  transition: all 0.25s ease;
 }
 
 .gradient-text {
@@ -127,13 +173,4 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-fade-in {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 2s infinite ease-in-out;
 }

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import DashboardPage from './pages/DashboardPage';
 import CoursesPage from './pages/CoursesPage';
+import NotesPage from './pages/NotesPage';
 import PracticePage from './pages/PracticePage';
 import AIAssistantPage from './pages/AIAssistantPage';
 import AlgorithmsPage from './pages/AlgorithmsPage';
@@ -14,6 +15,15 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Apply template preference if set
+    const savedTemplate = localStorage.getItem('locin_app_template');
+    if (savedTemplate) {
+      document.body.classList.remove('template-cyberpunk', 'template-nordic', 'template-hacker');
+      if (savedTemplate !== 'midnight') {
+        document.body.classList.add(`template-${savedTemplate}`);
+      }
+    }
+
     const storedUser = localStorage.getItem('locin_user');
     const status = localStorage.getItem('locin_onboarding_status');
 
@@ -45,7 +55,7 @@ export default function App() {
     return (
       <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)' }}>
         <div style={{ color: 'var(--accent-primary)', fontWeight: '700', fontSize: '1.2rem' }}>
-          Loading LockIn Student Hub...
+          Loading LockIn Platform...
         </div>
       </div>
     );
@@ -63,6 +73,7 @@ export default function App() {
         <Route path="/" element={<MainLayout user={user} onLogout={handleLogout} />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="notes" element={<NotesPage />} />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="practice" element={<PracticePage />} />
           <Route path="algorithms" element={<AlgorithmsPage />} />

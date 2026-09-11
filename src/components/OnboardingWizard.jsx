@@ -99,7 +99,6 @@ const ALGORITHM_TEST_QUESTIONS = [
 ];
 
 export default function OnboardingWizard({ onComplete }) {
-  // Step 1: Auth ('auth'), Step 2: Background Analysis ('analysis'), Step 3: Learn ('learn'), Step 4: Test ('test'), Step 5: Result ('result')
   const [step, setStep] = useState('auth');
 
   // Auth Form State
@@ -107,19 +106,20 @@ export default function OnboardingWizard({ onComplete }) {
   const [authData, setAuthData] = useState({ username: '', email: '', password: '' });
   const [authUser, setAuthUser] = useState(null);
 
-  // Background Analysis State
+  // Expanded Background Analysis State
   const [analysisData, setAnalysisData] = useState({
+    fieldOfStudy: 'Computer Science & Engineering',
+    comfortableLanguage: 'Java',
+    academicYear: '3rd Year',
+    targetRole: 'Software Engineer / Backend Developer',
     experienceLevel: 'beginner', // 'beginner' | 'non-beginner'
-    primaryGoal: 'placements',
-    preferredLanguage: 'Java',
     studyHoursPerWeek: '10-20',
   });
 
   // Algorithm Test State
   const [userAnswers, setUserAnswers] = useState({});
-  const [testResult, setTestResult] = useState(null); // { score: number, percentage: number, passed: boolean }
+  const [testResult, setTestResult] = useState(null);
 
-  // Step 1: Handle Auth Submission
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     const user = await UserService.login({
@@ -130,7 +130,6 @@ export default function OnboardingWizard({ onComplete }) {
     setStep('analysis');
   };
 
-  // Step 2: Handle Analysis Submission
   const handleAnalysisSubmit = (e) => {
     e.preventDefault();
     if (analysisData.experienceLevel === 'beginner') {
@@ -140,7 +139,6 @@ export default function OnboardingWizard({ onComplete }) {
     }
   };
 
-  // Step 4: Submit Algorithm Test
   const handleTestSubmit = () => {
     let correctCount = 0;
     ALGORITHM_TEST_QUESTIONS.forEach((q) => {
@@ -163,7 +161,6 @@ export default function OnboardingWizard({ onComplete }) {
     setStep('result');
   };
 
-  // Step 5: Complete Onboarding (If Passed)
   const handleFinalUnlock = () => {
     const completeUserData = {
       ...authUser,
@@ -191,7 +188,7 @@ export default function OnboardingWizard({ onComplete }) {
         className="glass-panel"
         style={{
           width: '100%',
-          maxWidth: '750px',
+          maxWidth: '780px',
           borderRadius: 'var(--radius-lg)',
           padding: '2.5rem',
           boxShadow: 'var(--shadow-glow)',
@@ -203,14 +200,13 @@ export default function OnboardingWizard({ onComplete }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <GraduationCap size={32} color="var(--accent-primary)" />
             <h1 style={{ fontSize: '1.75rem', fontWeight: '800' }} className="gradient-text">
-              LockIn Onboarding & Skill Assessment
+              LockIn Onboarding & Background Analysis
             </h1>
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Complete step-by-step verification to unlock full courses, practice questions, and AI doubt solver.
+            Personalizing your study profile and algorithm qualification path.
           </p>
 
-          {/* Progress Tracker Bar */}
           <div
             style={{
               display: 'flex',
@@ -268,10 +264,10 @@ export default function OnboardingWizard({ onComplete }) {
         {step === 'auth' && (
           <div>
             <h2 style={{ fontSize: '1.35rem', fontWeight: '800', marginBottom: '0.5rem', textAlign: 'center' }}>
-              {isRegister ? 'Step 1: Create Your Student Account' : 'Step 1: Sign In to Your Student Account'}
+              {isRegister ? 'Step 1: Create Student Account' : 'Step 1: Sign In to LockIn'}
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '1.5rem' }}>
-              Sign in or create an account to start your background skill analysis.
+              Sign in or create your student profile to start background analysis.
             </p>
 
             <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '480px', margin: '0 auto' }}>
@@ -371,20 +367,125 @@ export default function OnboardingWizard({ onComplete }) {
           </div>
         )}
 
-        {/* STEP 2: BACKGROUND ANALYSIS & PROFILER */}
+        {/* STEP 2: EXPANDED BACKGROUND ANALYSIS */}
         {step === 'analysis' && (
           <div>
             <h2 style={{ fontSize: '1.35rem', fontWeight: '800', marginBottom: '0.5rem', textAlign: 'center' }}>
               Step 2: Background Analysis & Skill Profiler
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '1.5rem' }}>
-              Tell us about your background so we can customize your algorithm assessment path.
+              Tell us about your field of study, preferred language, and experience level.
             </p>
 
-            <form onSubmit={handleAnalysisSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '540px', margin: '0 auto' }}>
+            <form onSubmit={handleAnalysisSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '580px', margin: '0 auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                    What are you studying?
+                  </label>
+                  <select
+                    value={analysisData.fieldOfStudy}
+                    onChange={(e) => setAnalysisData({ ...analysisData, fieldOfStudy: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="AI & Data Science">AI & Data Science</option>
+                    <option value="Electronics & Communication">Electronics & Communication</option>
+                    <option value="High School / Pre-College">High School / Pre-College</option>
+                    <option value="Self-Taught / Bootcamp">Self-Taught / Bootcamp</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                    Comfortable Programming Language
+                  </label>
+                  <select
+                    value={analysisData.comfortableLanguage}
+                    onChange={(e) => setAnalysisData({ ...analysisData, comfortableLanguage: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="Java">Java</option>
+                    <option value="C++">C++</option>
+                    <option value="Python">Python</option>
+                    <option value="JavaScript/TypeScript">JavaScript / TypeScript</option>
+                    <option value="Go">Go</option>
+                    <option value="Rust">Rust</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                    Academic Level / Year
+                  </label>
+                  <select
+                    value={analysisData.academicYear}
+                    onChange={(e) => setAnalysisData({ ...analysisData, academicYear: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="1st Year Undergraduate">1st Year Undergraduate</option>
+                    <option value="2nd Year Undergraduate">2nd Year Undergraduate</option>
+                    <option value="3rd Year Undergraduate">3rd Year Undergraduate</option>
+                    <option value="4th Year / Final Year">4th Year / Final Year</option>
+                    <option value="Postgraduate / Master's">Postgraduate / Master's</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
+                    Target Career Goal
+                  </label>
+                  <select
+                    value={analysisData.targetRole}
+                    onChange={(e) => setAnalysisData({ ...analysisData, targetRole: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="Software Engineer / Backend">Software Engineer / Backend</option>
+                    <option value="Full Stack Web Engineer">Full Stack Web Engineer</option>
+                    <option value="AI / Data Engineer">AI / Data Engineer</option>
+                    <option value="Competitive Programmer">Competitive Programmer</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.5rem', display: 'block' }}>
-                  What is your experience level with Data Structures & Algorithms?
+                  Self-Assessed Experience Level with Data Structures & Algorithms
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div
@@ -399,7 +500,7 @@ export default function OnboardingWizard({ onComplete }) {
                   >
                     <div style={{ fontWeight: '700', fontSize: '0.95rem', marginBottom: '0.25rem' }}>🌱 Beginner</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                      New to algorithms. I want to learn the concepts before taking the qualification test.
+                      New to algorithms. Teach me concepts before the qualification test.
                     </div>
                   </div>
 
@@ -421,53 +522,6 @@ export default function OnboardingWizard({ onComplete }) {
                 </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
-                  Primary Learning Goal
-                </label>
-                <select
-                  value={analysisData.primaryGoal}
-                  onChange={(e) => setAnalysisData({ ...analysisData, primaryGoal: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                  }}
-                >
-                  <option value="placements">Campus Placements & Software Engineering Jobs</option>
-                  <option value="competitive">Competitive Programming (LeetCode/Codeforces)</option>
-                  <option value="academics">University Computer Science Coursework</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.3rem', display: 'block' }}>
-                  Preferred Programming Language
-                </label>
-                <select
-                  value={analysisData.preferredLanguage}
-                  onChange={(e) => setAnalysisData({ ...analysisData, preferredLanguage: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                  }}
-                >
-                  <option value="Java">Java</option>
-                  <option value="C++">C++</option>
-                  <option value="Python">Python</option>
-                  <option value="JavaScript">JavaScript</option>
-                </select>
-              </div>
-
               <button
                 type="submit"
                 style={{
@@ -486,7 +540,7 @@ export default function OnboardingWizard({ onComplete }) {
                   gap: '0.5rem',
                 }}
               >
-                {analysisData.experienceLevel === 'beginner' ? 'Start Algorithm Learning Path' : 'Proceed to Algorithm Test'} <ArrowRight size={18} />
+                {analysisData.experienceLevel === 'beginner' ? 'Start Algorithm Learning Path' : 'Proceed to Algorithm Diagnostic Test'} <ArrowRight size={18} />
               </button>
             </form>
           </div>
@@ -499,7 +553,7 @@ export default function OnboardingWizard({ onComplete }) {
               Step 3: Algorithm Learning Essentials
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '1.5rem' }}>
-              As a beginner, review these core algorithm concepts before taking your qualification test.
+              Review these core algorithm concepts tailored for <strong>{analysisData.comfortableLanguage}</strong>.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -550,7 +604,7 @@ export default function OnboardingWizard({ onComplete }) {
                 gap: '0.5rem',
               }}
             >
-              I'm Ready! Take the Algorithm Test <ArrowRight size={18} />
+              Take the Algorithm Test <ArrowRight size={18} />
             </button>
           </div>
         )}
@@ -560,7 +614,7 @@ export default function OnboardingWizard({ onComplete }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: '800' }}>
-                Step 4: Algorithm Qualification Test (Pass Criteria: &gt;= 80%)
+                Step 4: Algorithm Qualification Test (Pass Bar: &gt;= 80%)
               </h2>
               <span style={{ fontSize: '0.8rem', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', backgroundColor: 'var(--accent-amber)', color: '#000', fontWeight: '700' }}>
                 10 Questions
@@ -629,7 +683,7 @@ export default function OnboardingWizard({ onComplete }) {
           </div>
         )}
 
-        {/* STEP 5: RESULT & GATE PASS EVALUATION */}
+        {/* STEP 5: RESULT */}
         {step === 'result' && testResult && (
           <div style={{ textAlign: 'center' }}>
             {testResult.passed ? (
@@ -650,32 +704,11 @@ export default function OnboardingWizard({ onComplete }) {
                   <Award size={40} />
                 </div>
                 <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--accent-emerald)', marginBottom: '0.5rem' }}>
-                  🎉 Algorithm Qualification Passed! ({testResult.percentage}%)
+                  🎉 Qualification Passed! ({testResult.percentage}%)
                 </h2>
                 <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                   You scored <strong>{testResult.score} out of 10</strong> (Required: &gt;= 80%). You have officially passed the algorithm gate and unlocked full platform access!
                 </p>
-
-                <div
-                  style={{
-                    padding: '1rem',
-                    backgroundColor: 'var(--bg-tertiary)',
-                    borderRadius: 'var(--radius-md)',
-                    textAlign: 'left',
-                    marginBottom: '1.5rem',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  <div style={{ fontWeight: '700', marginBottom: '0.5rem', color: 'var(--accent-cyan)' }}>
-                    Unlocked Privileges:
-                  </div>
-                  <ul style={{ paddingLeft: '1.25rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                    <li>Full Access to Computer Science Courses & Starter Templates</li>
-                    <li>LeetCode / GFG Style Coding Practice Runner</li>
-                    <li>AI Assistant Doubt Solver Bot</li>
-                    <li>Personalized Student Study Dashboard & Analytics</li>
-                  </ul>
-                </div>
 
                 <button
                   onClick={handleFinalUnlock}
@@ -689,10 +722,9 @@ export default function OnboardingWizard({ onComplete }) {
                     fontWeight: '800',
                     cursor: 'pointer',
                     fontSize: '1rem',
-                    boxShadow: 'var(--shadow-glow)',
                   }}
                 >
-                  Enter LockIn Hub Platform <ArrowRight size={20} style={{ verticalAlign: 'middle' }} />
+                  Enter LockIn Platform <ArrowRight size={20} style={{ verticalAlign: 'middle' }} />
                 </button>
               </div>
             ) : (
@@ -713,20 +745,11 @@ export default function OnboardingWizard({ onComplete }) {
                   <XCircle size={40} />
                 </div>
                 <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--accent-rose)', marginBottom: '0.5rem' }}>
-                  Qualification Requirement Not Met ({testResult.percentage}%)
+                  Requirement Not Met ({testResult.percentage}%)
                 </h2>
                 <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                   You scored <strong>{testResult.score} out of 10</strong>. You need at least <strong>80% (8/10)</strong> to unlock courses and practice questions.
                 </p>
-
-                <div style={{ padding: '1rem', backgroundColor: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', textAlign: 'left', marginBottom: '1.5rem' }}>
-                  <div style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.5rem', color: 'var(--accent-amber)' }}>
-                    Action Plan to Pass:
-                  </div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                    Review the Algorithm Learning essentials (Sorting, Binary Search, Trees & Graph Traversals), then retake the qualification test.
-                  </p>
-                </div>
 
                 <div style={{ display: 'flex', gap: '1rem' }}>
                   <button
@@ -765,7 +788,7 @@ export default function OnboardingWizard({ onComplete }) {
                       gap: '0.5rem',
                     }}
                   >
-                    <RefreshCw size={18} /> Retake Test Now
+                    <RefreshCw size={18} /> Retake Test
                   </button>
                 </div>
               </div>
