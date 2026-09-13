@@ -1,6 +1,8 @@
+import { dbService } from './dbService';
+
 /**
  * LocIn API Gateway & Centralized Service Config
- * Handles requests to Spring Boot Microservices with Conversational Intelligence Engine.
+ * Connects to Cloud Database (Supabase) / Microservice endpoints.
  */
 
 const API_BASE_URLS = {
@@ -38,24 +40,25 @@ export const UserService = {
         body: JSON.stringify(credentials),
       });
     } catch {
-      // Fallback local mock login
-      const mockUser = {
-        id: 1,
-        name: credentials.username || 'Student User',
-        email: credentials.email || 'student@locin.edu',
-        token: 'mock-jwt-token-12345',
-        streak: 7,
-        xp: 1450,
-      };
-      localStorage.setItem('locin_user', JSON.stringify(mockUser));
-      localStorage.setItem('locin_auth_token', mockUser.token);
-      return mockUser;
+      // Route to Database Service (Supabase Cloud DB with Local Sync Fallback)
+      return await dbService.login(credentials);
     }
   },
 
-  async getProfile() {
-    const stored = localStorage.getItem('locin_user');
-    return stored ? JSON.parse(stored) : { name: 'Student User', streak: 7, xp: 1450 };
+  async signUp(credentials) {
+    return await dbService.signUp(credentials);
+  },
+
+  async getProfile(userId) {
+    return await dbService.getProfile(userId);
+  },
+
+  async updateProfile(profileData) {
+    return await dbService.updateProfile(profileData);
+  },
+
+  async addXP(amount) {
+    return await dbService.addXP(amount);
   }
 };
 

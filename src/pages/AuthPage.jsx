@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { UserService } from '../services/api';
-import { User, Lock, Mail, ShieldCheck, LogOut, CheckCircle } from 'lucide-react';
+import { dbService } from '../services/dbService';
+import { User, Lock, Mail, ShieldCheck, LogOut, CheckCircle, Database } from 'lucide-react';
 
 export default function AuthPage() {
   const [user, setUser] = useState(null);
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [msg, setMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     UserService.getProfile().then((res) => {
@@ -16,15 +18,27 @@ export default function AuthPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setMsg('Authenticating...');
-    const result = await UserService.login(formData);
-    setUser(result);
-    setMsg('Successfully signed in!');
+    try {
+      let result;
+      if (isRegister) {
+        result = await UserService.signUp(formData);
+        setMsg('Account created successfully! Signed in.');
+      } else {
+        result = await UserService.login(formData);
+        setMsg('Successfully signed in!');
+      }
+      setUser(result);
+    } catch (err) {
+      setMsg(`Authentication failed: ${err.message || 'Check credentials.'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('locin_user');
-    localStorage.removeItem('locin_auth_token');
+  const handleLogout = async () => {
+    await dbService.logout();
     setUser(null);
     setMsg('Logged out.');
   };
@@ -52,7 +66,26 @@ export default function AuthPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>{user.name}</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{user.email}</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>{user.email}</p>
+
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.4rem 0.8rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              backgroundColor: dbService.isCloudActive() ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)',
+              color: dbService.isCloudActive() ? '#10b981' : 'var(--accent-indigo)',
+              border: `1px solid ${dbService.isCloudActive() ? 'rgba(16, 185, 129, 0.3)' : 'rgba(99, 102, 241, 0.3)'}`
+            }}
+          >
+            <Database size={14} />
+            {dbService.isCloudActive() ? 'Cloud DB Active (Supabase PostgreSQL)' : 'Cloud Storage Engine Active (Local Cache Mode)'}
+          </div>
 
           <div
             style={{

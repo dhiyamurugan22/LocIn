@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { dbService } from '../services/dbService';
 import {
   BookMarked,
   FolderPlus,
@@ -54,10 +55,8 @@ const INITIAL_NOTES = [
 
 export default function NotesPage() {
   const [folders, setFolders] = useState(INITIAL_FOLDERS);
-  const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem('locin_student_notes');
-    return saved ? JSON.parse(saved) : INITIAL_NOTES;
-  });
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [activeFolder, setActiveFolder] = useState('All');
   const [selectedNote, setSelectedNote] = useState(null);
@@ -71,9 +70,29 @@ export default function NotesPage() {
   const [editTags, setEditTags] = useState('');
   const [newFolderName, setNewFolderName] = useState('');
 
+  // Initial Load from Cloud DB / Local Fallback
   useEffect(() => {
-    localStorage.setItem('locin_student_notes', JSON.stringify(notes));
-  }, [notes]);
+    async function loadNotes() {
+      setLoading(true);
+      const user = await dbService.getProfile();
+      const fetchedNotes = await dbService.getNotes(user?.id);
+      if (fetchedNotes && fetchedNotes.length > 0) {
+        setNotes(fetchedNotes);
+      } else {
+        setNotes(INITIAL_NOTES);
+        await dbService.saveNotes(INITIAL_NOTES, user?.id);
+      }
+      setLoading(false);
+    }
+    loadNotes();
+  }, []);
+
+  // Sync to Cloud DB / Local Fallback on changes
+  const saveAllNotes = async (updatedNotes) => {
+    setNotes(updatedNotes);
+    const user = await dbService.getProfile();
+    await dbService.saveNotes(updatedNotes, user?.id);
+  };
 
   const filteredNotes = notes.filter((n) => {
     const matchesFolder = activeFolder === 'All' || n.folder === activeFolder;
@@ -84,7 +103,7 @@ export default function NotesPage() {
     return matchesFolder && matchesSearch;
   });
 
-  const handleCreateNewNote = () => {
+  const handleCreateNewNote = async () => {
     const newNote = {
       id: `n-${Date.now()}`,
       title: 'Untitled Study Note',
@@ -94,7 +113,8 @@ export default function NotesPage() {
       content: '# New Study Note\n\nWrite your concepts, code snippets, or notes here...',
       updatedAt: new Date().toISOString().split('T')[0],
     };
-    setNotes([newNote, ...notes]);
+    const updated = [newNote, ...notes];
+    await saveAllNotes(updated);
     setSelectedNote(newNote);
     startEditing(newNote);
   };
@@ -107,7 +127,7 @@ export default function NotesPage() {
     setIsEditing(true);
   };
 
-  const saveEditedNote = () => {
+  const saveEditedNote = async () => {
     if (!selectedNote) return;
     const updated = notes.map((n) => {
       if (n.id === selectedNote.id) {
@@ -123,25 +143,24 @@ export default function NotesPage() {
       return n;
     });
 
-    setNotes(updated);
+    await saveAllNotes(updated);
     const curr = updated.find((n) => n.id === selectedNote.id);
     setSelectedNote(curr);
     setIsEditing(false);
   };
 
-  const togglePin = (id, e) => {
+  const togglePin = async (id, e) => {
     e.stopPropagation();
-    setNotes(
-      notes.map((n) => (n.id === id ? { ...n, pinned: !n.pinned } : n))
-    );
+    const updated = notes.map((n) => (n.id === id ? { ...n, pinned: !n.pinned } : n));
+    await saveAllNotes(updated);
   };
 
-  const deleteNote = (id, e) => {
+  const deleteNote = async (id, e) => {
     e.stopPropagation();
     const remaining = notes.filter((n) => n.id !== id);
-    setNotes(remaining);
-    if (selectedNote && selectedNote.id === id) {
-      setSelectedNote(remaining[0] || null);
+    await saveAllNotes(remaining);
+    if (selectedNote?.id === id) {
+      setSelectedNote(null);
     }
   };
 

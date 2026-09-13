@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { dbService } from '../services/dbService';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { TrendingUp, Award, BookOpen, Target, CheckCircle2, Clock, Zap, Flame } from 'lucide-react';
 
@@ -13,8 +14,17 @@ const WEEKLY_DATA = [
 ];
 
 export default function DashboardPage() {
-  const userStr = localStorage.getItem('locin_user');
-  const user = userStr ? JSON.parse(userStr) : { name: 'Student Learner' };
+  const [user, setUser] = useState({ name: 'Student Learner', streak: 7, xp: 1450 });
+
+  useEffect(() => {
+    async function loadUserProfile() {
+      const profile = await dbService.getProfile();
+      if (profile) {
+        setUser(profile);
+      }
+    }
+    loadUserProfile();
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -37,16 +47,16 @@ export default function DashboardPage() {
             Welcome back, <span className="gradient-text">{user.name || 'Student Learner'}</span> 👋
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-            You are on a <strong style={{ color: 'var(--accent-amber)' }}>7-day learning streak</strong>! Keep up the momentum.
+            You are on a <strong style={{ color: 'var(--accent-amber)' }}>{user.streak || 7}-day learning streak</strong>! Keep up the momentum.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-amber)', fontWeight: '700', fontSize: '0.9rem' }}>
-            <Flame size={18} /> 7 Days Streak
+            <Flame size={18} /> {user.streak || 7} Days Streak
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(6, 182, 212, 0.15)', color: 'var(--accent-cyan)', fontWeight: '700', fontSize: '0.9rem' }}>
-            <Zap size={18} /> 1,450 XP
+            <Zap size={18} /> {(user.xp || 1450).toLocaleString()} XP
           </div>
         </div>
       </div>
