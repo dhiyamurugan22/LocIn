@@ -1,176 +1,249 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap');
 
 :root {
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Fira Code', monospace;
+  /* Typography Trio */
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Theme colors - Default Midnight Studio */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-glass: rgba(30, 41, 59, 0.8);
-  --bg-card: rgba(51, 65, 85, 0.6);
-  
+  /* -------------------------------------------------------------------------
+     ERA 1: SEPIA & PARCHMENT (Learning / In Progress / Fuzzy State)
+     ------------------------------------------------------------------------- */
+  --sepia-bg: #191512;
+  --sepia-surface: #241e18;
+  --sepia-surface-hover: #2e261f;
+  --sepia-border: rgba(212, 163, 89, 0.25);
+  --sepia-border-hover: rgba(212, 163, 89, 0.5);
+  --sepia-text: #f4ebd9;
+  --sepia-text-muted: #b8a48e;
+  --sepia-gold: #d4a359;
+  --sepia-amber: #e07a5f;
+  --sepia-glow: 0 0 25px rgba(212, 163, 89, 0.25);
+
+  /* -------------------------------------------------------------------------
+     ERA 2: COOL TERMINAL (Solidified / Clean IDE State)
+     ------------------------------------------------------------------------- */
+  --terminal-bg: #0b0f17;
+  --terminal-surface: #131926;
+  --terminal-surface-hover: #1c2538;
+  --terminal-border: rgba(56, 189, 248, 0.25);
+  --terminal-border-hover: rgba(56, 189, 248, 0.5);
+  --terminal-text: #f1f5f9;
+  --terminal-text-muted: #94a3b8;
+  --terminal-cyan: #38bdf8;
+  --terminal-blue: #6366f1;
+  --terminal-emerald: #34d399;
+  --terminal-glow: 0 0 25px rgba(56, 189, 248, 0.25);
+
+  /* -------------------------------------------------------------------------
+     ERA 3: MERGED MASTERY (Permanent Understanding - Gold + Cyan Harmony)
+     ------------------------------------------------------------------------- */
+  --merged-bg: #12131e;
+  --merged-surface: rgba(26, 27, 44, 0.75);
+  --merged-gold-cyan: linear-gradient(135deg, #d4a359 0%, #38bdf8 100%);
+  --merged-border: rgba(212, 163, 89, 0.35);
+  --merged-glow: 0 0 30px rgba(212, 163, 89, 0.2), 0 0 30px rgba(56, 189, 248, 0.2);
+
+  /* Default Active Theme Tokens */
+  --bg-primary: var(--terminal-bg);
+  --bg-secondary: var(--terminal-surface);
+  --bg-tertiary: #1c2538;
+  --bg-glass: rgba(19, 25, 38, 0.85);
+
   --border-color: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(99, 102, 241, 0.4);
+  --border-hover: var(--terminal-cyan);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-primary: var(--terminal-text);
+  --text-secondary: var(--terminal-text-muted);
   --text-muted: #64748b;
 
-  /* Accents */
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-  --accent-cyan: #06b6d4;
-  --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.35);
+  --accent-primary: #38bdf8;
+  --accent-gradient: var(--merged-gold-cyan);
+  --accent-gold: var(--sepia-gold);
+  --accent-cyan: var(--terminal-cyan);
+  --accent-emerald: var(--terminal-emerald);
+  --accent-amber: var(--sepia-amber);
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.85rem;
+  --radius-lg: 1.25rem;
   --radius-full: 9999px;
+
+  --transition-patient: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Template 1: Cyberpunk Neon Matrix */
-.template-cyberpunk {
-  --bg-primary: #05050b;
-  --bg-secondary: #0d0e1b;
-  --bg-tertiary: #17192e;
-  --bg-glass: rgba(13, 14, 27, 0.85);
-  --bg-card: rgba(23, 25, 46, 0.7);
-
-  --border-color: rgba(6, 182, 212, 0.25);
-  --border-hover: rgba(236, 72, 153, 0.6);
-
-  --text-primary: #ffffff;
-  --text-secondary: #a5f3fc;
-  --text-muted: #475569;
-
-  --accent-primary: #06b6d4;
-  --accent-primary-hover: #0891b2;
-  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #ec4899 100%);
-  --shadow-glow: 0 0 22px rgba(6, 182, 212, 0.45);
-}
-
-/* Template 2: Nordic Clean Light */
-.template-nordic {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --bg-glass: rgba(255, 255, 255, 0.9);
-  --bg-card: #ffffff;
-
-  --border-color: #e2e8f0;
-  --border-hover: #cbd5e1;
-
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-
-  --accent-primary: #0d9488;
-  --accent-primary-hover: #0f766e;
-  --accent-gradient: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
-  --shadow-glow: 0 0 18px rgba(13, 148, 136, 0.2);
-}
-
-/* Template 3: Emerald Hacker Terminal Mode */
-.template-hacker {
-  --bg-primary: #030712;
-  --bg-secondary: #0b1329;
-  --bg-tertiary: #111e38;
-  --bg-glass: rgba(11, 19, 41, 0.85);
-  --bg-card: rgba(17, 30, 56, 0.7);
-
-  --border-color: rgba(16, 185, 129, 0.3);
-  --border-hover: rgba(16, 185, 129, 0.6);
-
-  --text-primary: #ecfdf5;
-  --text-secondary: #6ee7b7;
-  --text-muted: #34d399;
-
-  --accent-primary: #10b981;
-  --accent-primary-hover: #059669;
-  --accent-gradient: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.4);
-}
-
+/* Base Styles */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.6;
+  min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  letter-spacing: -0.02em;
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: rgba(11, 15, 23, 0.8);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-tertiary);
+  background: rgba(212, 163, 89, 0.25);
   border-radius: var(--radius-full);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--sepia-gold);
 }
 
-/* Utilities */
+/* Typography Classes */
+h1, h2, h3, .font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Dual Palette Component Classes */
+
+/* 1. Sepia Notebook Card (Learning / Fuzzy State) */
+.sepia-notebook {
+  background-color: var(--sepia-surface);
+  border: 1px solid var(--sepia-border);
+  border-left: 4px solid var(--sepia-gold);
+  color: var(--sepia-text);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: var(--transition-patient);
+}
+.sepia-notebook:hover {
+  border-color: var(--sepia-gold);
+  box-shadow: var(--sepia-glow);
+  transform: translateY(-2px);
+}
+
+/* 2. Cool Terminal Card (Solidified Code State) */
+.terminal-card {
+  background-color: var(--terminal-surface);
+  border: 1px solid var(--terminal-border);
+  border-left: 4px solid var(--terminal-cyan);
+  color: var(--terminal-text);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: var(--transition-patient);
+}
+.terminal-card:hover {
+  border-color: var(--terminal-cyan);
+  box-shadow: var(--terminal-glow);
+  transform: translateY(-2px);
+}
+
+/* 3. Merged Mastery Card (Permanent Understanding) */
+.merged-mastery-card {
+  background: linear-gradient(135deg, rgba(36, 30, 24, 0.9) 0%, rgba(19, 25, 38, 0.9) 100%);
+  border: 1px solid rgba(212, 163, 89, 0.4);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--merged-glow);
+  transition: var(--transition-patient);
+}
+.merged-mastery-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--merged-gold-cyan);
+}
+
+/* Glass Panels */
 .glass-panel {
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  transition: all 0.25s ease;
+  border-radius: var(--radius-lg);
 }
 
-.gradient-text {
-  background: var(--accent-gradient);
+/* Hourglass Light Loader */
+.hourglass-loader {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--sepia-gold);
+}
+.hourglass-loader .light-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sepia-gold);
+  box-shadow: 0 0 12px var(--sepia-gold);
+  animation: patientPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes patientPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Merged Gradient Text */
+.gradient-text-merged {
+  background: var(--merged-gold-cyan);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.gradient-bg {
-  background: var(--accent-gradient);
+.gradient-text-sepia {
+  background: linear-gradient(135deg, #d4a359 0%, #e07a5f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.glow-effect {
-  box-shadow: var(--shadow-glow);
+/* Subtle Interactive Buttons */
+.btn-patient {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: var(--transition-patient);
 }
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+.btn-patient-sepia {
+  background: linear-gradient(135deg, #d4a359 0%, #b8860b 100%);
+  color: #191512;
 }
-
-.animate-fade-in {
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.btn-patient-sepia:hover {
+  box-shadow: var(--sepia-glow);
+  transform: translateY(-1px);
+}
+.btn-patient-terminal {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  color: #0b0f17;
+}
+.btn-patient-terminal:hover {
+  box-shadow: var(--terminal-glow);
+  transform: translateY(-1px);
 }

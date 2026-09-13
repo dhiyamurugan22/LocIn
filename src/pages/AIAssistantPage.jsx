@@ -1,55 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AIService } from '../services/api';
-import { Bot, Send, User, Sparkles, Code2, HelpCircle, Terminal } from 'lucide-react';
+import { aiService } from '../services/aiService';
+import { Bot, Send, Sparkles, Feather, Terminal, Code2, Brain, Check, RefreshCw } from 'lucide-react';
 
 const SUGGESTED_PROMPTS = [
-  "Explain the difference between HashMap and ConcurrentHashMap in Java",
-  "How does Dijkstra's algorithm work with priority queues?",
-  "Explain memory management & garbage collection in Python",
-  "Write an optimized binary search tree traversal in C++",
+  "Explain Dijkstra's Algorithm with intuition and O((V+E) log V) proof.",
+  "Write a Java ConcurrentHashMap implementation with thread safety breakdown.",
+  "How does QuickSort pivot selection prevent O(N^2) worst case performance?",
+  "What is the difference between monolithic and microservice architecture?"
 ];
 
 export default function AIAssistantPage() {
   const [messages, setMessages] = useState([
     {
-      sender: 'bot',
-      text: 'Hello! I am your **LockIn AI Academic & Coding Assistant**. Ask me any doubt about programming, data structures, algorithm complexities, or concepts!',
-      time: 'Just now',
-    },
+      sender: 'ai',
+      text: `Hello! I am your **LockIn Academic AI Mentor** (powered by Google Gemini API).\n\nI am here to help you bridge the gap between *fuzzy understanding* and *permanent code mastery*. Ask me any question on algorithms, computer science concepts, or system architecture!`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
   ]);
-  const [inputQuery, setInputQuery] = useState('');
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
-  const handleSendMessage = async (textToSend) => {
-    const query = textToSend || inputQuery;
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading]);
+
+  const handleSend = async (questionText) => {
+    const query = questionText || input;
     if (!query.trim() || loading) return;
 
     const userMsg = {
       sender: 'user',
       text: query,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    if (!textToSend) setInputQuery('');
+    if (!questionText) setInput('');
     setLoading(true);
 
     try {
-      const response = await AIService.askDoubt(query);
-      const botMsg = {
-        sender: 'bot',
-        text: response.answer,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      const res = await AIService.askDoubt(query);
+      const aiMsg = {
+        sender: 'ai',
+        text: res.answer,
+        source: res.source,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
-      setMessages((prev) => [...prev, botMsg]);
-    } catch {
+      setMessages((prev) => [...prev, aiMsg]);
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
-          sender: 'bot',
-          text: 'I am currently unable to reach the AI backend endpoint, but here is a quick solution guide:\n\nReview your logic and check edge cases like empty arrays or null pointers.',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
+          sender: 'ai',
+          text: `An error occurred while reaching the AI Mentor: ${err.message}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
       ]);
     } finally {
       setLoading(false);
@@ -57,224 +68,131 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: 'calc(100vh - 120px)' }}>
-      {/* Page Header */}
-      <div
-        style={{
-          padding: '1.25rem 1.5rem',
-          borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--bg-secondary)',
-          border: '1px solid var(--border-color)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              padding: '0.6rem',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--accent-gradient)',
-              color: '#fff',
-            }}
-          >
-            <Bot size={24} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', height: 'calc(100vh - 140px)' }}>
+      
+      {/* Top Banner */}
+      <div className="merged-mastery-card" style={{ padding: '1.25rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-md)', background: 'var(--merged-gold-cyan)', color: '#0b0f17', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Brain size={22} />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.35rem', fontWeight: '800' }}>AI Doubt-Solving Assistant</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-              Instant answers, code debugging, and concept explanations powered by AI.
+            <h2 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--sepia-text)' }}>
+              LockIn Academic AI Mentor
+            </h2>
+            <p style={{ fontSize: '0.8rem', color: 'var(--terminal-text-muted)' }}>
+              Conversational CS & Coding Engine • {aiService.isLive() ? 'Gemini 2.5 Flash Live' : 'Offline Knowledge Gateway Active'}
             </p>
           </div>
         </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.9rem', borderRadius: 'var(--radius-full)', backgroundColor: 'rgba(56, 189, 248, 0.15)', border: '1px solid var(--terminal-border)', color: 'var(--terminal-cyan)', fontSize: '0.78rem', fontFamily: 'var(--font-mono)' }}>
+          <Sparkles size={14} /> Dual-Palette AI Explanation
+        </div>
       </div>
 
-      {/* Suggested Quick Prompts */}
-      <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
-        {SUGGESTED_PROMPTS.map((prompt, idx) => (
-          <button
-            key={idx}
-            onClick={() => handleSendMessage(prompt)}
-            style={{
-              padding: '0.4rem 0.85rem',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-secondary)',
-              fontSize: '0.78rem',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            💡 {prompt}
-          </button>
-        ))}
-      </div>
-
-      {/* Chat Messages Window */}
-      <div
-        className="glass-panel"
-        style={{
-          flex: 1,
-          borderRadius: 'var(--radius-lg)',
-          padding: '1.25rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.5rem' }}>
+      {/* Main Chat Body */}
+      <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '1.5rem' }}>
+        
+        {/* Messages Scroll Area */}
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.2rem', paddingRight: '0.5rem' }}>
           {messages.map((msg, index) => {
-            const isBot = msg.sender === 'bot';
+            const isUser = msg.sender === 'user';
             return (
               <div
                 key={index}
                 style={{
+                  alignSelf: isUser ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%',
                   display: 'flex',
-                  gap: '0.75rem',
-                  alignSelf: isBot ? 'flex-start' : 'flex-end',
-                  maxWidth: '80%',
+                  flexDirection: 'column',
+                  gap: '0.3rem'
                 }}
               >
-                {isBot && (
-                  <div
-                    style={{
-                      width: '34px',
-                      height: '34px',
-                      borderRadius: 'var(--radius-full)',
-                      background: 'var(--accent-gradient)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Bot size={18} />
-                  </div>
-                )}
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', alignSelf: isUser ? 'flex-end' : 'flex-start', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  {isUser ? 'YOU' : msg.source || 'AI MENTOR'} • {msg.timestamp}
+                </div>
 
                 <div
+                  className={isUser ? 'btn-patient btn-patient-terminal' : 'sepia-notebook'}
                   style={{
-                    backgroundColor: isBot ? 'var(--bg-tertiary)' : 'var(--accent-primary)',
-                    color: isBot ? 'var(--text-primary)' : '#ffffff',
-                    padding: '0.85rem 1.1rem',
-                    borderRadius: 'var(--radius-lg)',
-                    borderBottomLeftRadius: isBot ? '0.2rem' : 'var(--radius-lg)',
-                    borderBottomRightRadius: !isBot ? '0.2rem' : 'var(--radius-lg)',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.6',
+                    padding: '1.2rem 1.5rem',
+                    borderRadius: isUser ? '1rem 1rem 0 1rem' : '1rem 1rem 1rem 0',
+                    fontSize: '0.92rem',
+                    lineHeight: 1.7,
                     whiteSpace: 'pre-wrap',
-                    boxShadow: 'var(--shadow-sm)',
+                    fontFamily: isUser ? 'var(--font-sans)' : 'var(--font-serif)',
+                    color: isUser ? '#0b0f17' : 'var(--sepia-text)',
                   }}
                 >
                   {msg.text}
-                  <div
-                    style={{
-                      fontSize: '0.65rem',
-                      opacity: 0.7,
-                      textAlign: 'right',
-                      marginTop: '0.4rem',
-                    }}
-                  >
-                    {msg.time}
-                  </div>
                 </div>
-
-                {!isBot && (
-                  <div
-                    style={{
-                      width: '34px',
-                      height: '34px',
-                      borderRadius: 'var(--radius-full)',
-                      backgroundColor: 'var(--bg-tertiary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'var(--text-primary)',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <User size={18} />
-                  </div>
-                )}
               </div>
             );
           })}
 
           {loading && (
-            <div style={{ display: 'flex', gap: '0.75rem', alignSelf: 'flex-start' }}>
-              <div
-                style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'var(--accent-gradient)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                }}
-              >
-                <Bot size={18} />
-              </div>
-              <div
-                style={{
-                  backgroundColor: 'var(--bg-tertiary)',
-                  padding: '0.85rem 1.1rem',
-                  borderRadius: 'var(--radius-lg)',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.85rem',
-                }}
-                className="animate-pulse-glow"
-              >
-                AI is analyzing your query...
-              </div>
+            <div style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '1rem 1.5rem', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--sepia-surface)', border: '1px solid var(--sepia-border)', color: 'var(--sepia-gold)', fontFamily: 'var(--font-serif)' }}>
+              <RefreshCw size={16} className="spin" style={{ animation: 'spin 1.5s linear infinite' }} />
+              Gemini AI is crafting your explanation...
             </div>
           )}
+          <div ref={chatEndRef} />
         </div>
 
-        {/* Input Box */}
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+        {/* Suggested Prompt Chips */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', margin: '1rem 0 0.8rem 0' }}>
+          {SUGGESTED_PROMPTS.map((promptText, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleSend(promptText)}
+              style={{
+                fontSize: '0.74rem',
+                fontFamily: 'var(--font-sans)',
+                padding: '0.4rem 0.82rem',
+                borderRadius: 'var(--radius-full)',
+                backgroundColor: 'rgba(212, 163, 89, 0.12)',
+                border: '1px solid rgba(212, 163, 89, 0.25)',
+                color: 'var(--sepia-gold)',
+                cursor: 'pointer',
+                transition: 'var(--transition-patient)',
+                textAlign: 'left'
+              }}
+            >
+              💡 {promptText}
+            </button>
+          ))}
+        </div>
+
+        {/* Input Bar */}
+        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} style={{ display: 'flex', gap: '0.75rem' }}>
           <input
             type="text"
-            placeholder="Type your question or paste code here..."
-            value={inputQuery}
-            onChange={(e) => setInputQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask a computer science doubt, algorithm proof, or debugging request..."
             style={{
               flex: 1,
-              backgroundColor: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
+              padding: '0.85rem 1.25rem',
               borderRadius: 'var(--radius-md)',
-              padding: '0.75rem 1rem',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              border: '1px solid var(--border-color)',
               color: 'var(--text-primary)',
+              fontSize: '0.92rem',
               outline: 'none',
-              fontSize: '0.9rem',
+              fontFamily: 'var(--font-sans)'
             }}
           />
           <button
-            onClick={() => handleSendMessage()}
-            disabled={!inputQuery.trim() || loading}
-            style={{
-              padding: '0.75rem 1.25rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: inputQuery.trim() ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-              color: '#fff',
-              border: 'none',
-              fontWeight: '600',
-              cursor: inputQuery.trim() ? 'pointer' : 'not-allowed',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-            }}
+            type="submit"
+            disabled={loading}
+            className="btn-patient btn-patient-terminal"
+            style={{ padding: '0.85rem 1.6rem' }}
           >
-            <Send size={18} /> Send
+            <Send size={18} /> Ask AI
           </button>
-        </div>
+        </form>
+
       </div>
     </div>
   );

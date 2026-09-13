@@ -1,4 +1,5 @@
 import { dbService } from './dbService';
+import { aiService } from './aiService';
 
 /**
  * LocIn API Gateway & Centralized Service Config
@@ -116,18 +117,15 @@ function generateAIAnswer(prompt) {
 
 export const AIService = {
   async askDoubt(question, context = '') {
-    try {
-      return await request(`${API_BASE_URLS.ai}/chat`, {
-        method: 'POST',
-        body: JSON.stringify({ question, context }),
-      });
-    } catch {
-      // Conversational response engine
-      return {
-        answer: generateAIAnswer(question),
-        timestamp: new Date().toISOString(),
-      };
-    }
+    return await aiService.askDoubt(question, context);
+  },
+
+  async summarizeNote(noteContent) {
+    return await aiService.summarizeNote(noteContent);
+  },
+
+  async generateQuiz(topic) {
+    return await aiService.generateQuiz(topic);
   }
 };
 
