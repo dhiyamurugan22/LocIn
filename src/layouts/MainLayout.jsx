@@ -16,24 +16,26 @@ import {
   Feather,
   Terminal,
   Sparkles,
-  Database
+  Database,
+  Moon,
+  Sun
 } from 'lucide-react';
 import SettingsModal from '../components/SettingsModal';
-import { dbService } from '../services/dbService';
 
-export default function MainLayout({ user, onLogout }) {
+export default function MainLayout({ user, activeTheme, onToggleTheme, onLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [activeEra, setActiveEra] = useState('merged'); // 'sepia' | 'terminal' | 'merged'
   const location = useLocation();
 
+  const isSepia = activeTheme === 'sepia';
+
   const navItems = [
-    { path: '/dashboard', label: 'Overview', era: 'merged', icon: LayoutDashboard, subtitle: 'Mastery Journey' },
-    { path: '/notes', label: 'Sepia Notebook', era: 'sepia', icon: BookMarked, subtitle: 'Handwritten Study Notes' },
-    { path: '/courses', label: 'Skill Trees', era: 'sepia', icon: BookOpen, subtitle: 'Parchment to Terminal' },
-    { path: '/practice', label: 'Code Lab', era: 'terminal', icon: Code2, subtitle: 'IDE & Spaced Practice' },
-    { path: '/algorithms', label: 'Algorithm Console', era: 'terminal', icon: Cpu, subtitle: 'Visual Mechanics' },
-    { path: '/ai-assistant', label: 'Academic AI', era: 'merged', icon: Bot, subtitle: 'Gemini 2.5 Flash' },
+    { path: '/dashboard', label: 'Overview', icon: LayoutDashboard, subtitle: 'Mastery Hub' },
+    { path: '/notes', label: isSepia ? 'Parchment Notes' : 'Terminal Notes', icon: isSepia ? Feather : BookMarked, subtitle: isSepia ? 'Handwritten Notebook' : 'Code Markdown' },
+    { path: '/courses', label: 'Course Trees', icon: BookOpen, subtitle: 'Syllabus & Modules' },
+    { path: '/practice', label: 'Practice Lab', icon: isSepia ? BookMarked : Code2, subtitle: isSepia ? 'Reflection Set' : 'IDE Terminal' },
+    { path: '/algorithms', label: 'Algorithms', icon: Cpu, subtitle: 'Visual Mechanics' },
+    { path: '/ai-assistant', label: 'Academic AI', icon: Bot, subtitle: 'Gemini 2.5 Flash' },
   ];
 
   const getPageTitle = () => {
@@ -42,7 +44,7 @@ export default function MainLayout({ user, onLogout }) {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
+    <div className={`theme-${activeTheme}`} style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       {/* Sidebar */}
       <aside
         style={{
@@ -75,50 +77,108 @@ export default function MainLayout({ user, onLogout }) {
               width: '42px',
               height: '42px',
               borderRadius: 'var(--radius-md)',
-              background: 'var(--merged-gold-cyan)',
+              background: 'var(--accent-gradient)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#0b0f17',
-              boxShadow: 'var(--merged-glow)',
+              color: '#000000',
+              boxShadow: 'var(--shadow-glow)',
             }}
           >
-            <GraduationCap size={24} />
+            {isSepia ? <Feather size={22} /> : <Terminal size={22} />}
           </div>
           <div>
             <h1
               style={{
                 fontSize: '1.3rem',
                 fontWeight: '800',
-                fontFamily: 'var(--font-heading)',
                 lineHeight: 1.1,
               }}
-              className="gradient-text-merged"
+              className="gradient-text-active"
             >
               LockIn
             </h1>
-            <span style={{ fontSize: '0.68rem', color: 'var(--sepia-gold)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
-              Dual-Palette Engine
+            <span style={{ fontSize: '0.68rem', color: 'var(--accent-primary)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: isSepia ? 'var(--font-serif)' : 'var(--font-mono)' }}>
+              {isSepia ? 'PARCHMENT ERA' : 'TERMINAL IDE ERA'}
             </span>
           </div>
         </div>
 
-        {/* Quiet Mastery & Time Invested Indicator */}
+        {/* Dedicated Theme Mode Switcher */}
+        <div style={{ padding: '1rem 1rem 0.5rem 1rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              borderRadius: 'var(--radius-md)',
+              padding: '0.25rem',
+              border: '1px solid var(--border-color)'
+            }}
+          >
+            <button
+              onClick={() => onToggleTheme('sepia')}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                padding: '0.5rem',
+                borderRadius: 'var(--radius-sm)',
+                border: 'none',
+                backgroundColor: isSepia ? 'var(--accent-primary)' : 'transparent',
+                color: isSepia ? '#171310' : 'var(--text-muted)',
+                fontWeight: '700',
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-serif)',
+                transition: 'var(--transition-patient)'
+              }}
+            >
+              <Feather size={14} /> Sepia
+            </button>
+
+            <button
+              onClick={() => onToggleTheme('terminal')}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                padding: '0.5rem',
+                borderRadius: 'var(--radius-sm)',
+                border: 'none',
+                backgroundColor: !isSepia ? 'var(--accent-primary)' : 'transparent',
+                color: !isSepia ? '#0b0f17' : 'var(--text-muted)',
+                fontWeight: '700',
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-mono)',
+                transition: 'var(--transition-patient)'
+              }}
+            >
+              <Terminal size={14} /> Terminal
+            </button>
+          </div>
+        </div>
+
+        {/* Quiet Mastery Indicator */}
         <div
           style={{
-            margin: '1.1rem 1rem 0.5rem 1rem',
-            padding: '0.9rem',
+            margin: '0.5rem 1rem 0.5rem 1rem',
+            padding: '0.85rem',
             borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, rgba(212, 163, 89, 0.1) 0%, rgba(56, 189, 248, 0.1) 100%)',
-            border: '1px solid rgba(212, 163, 89, 0.25)',
+            backgroundColor: 'rgba(255,255,255,0.03)',
+            border: '1px solid var(--border-color)',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--sepia-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'var(--font-serif)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Hourglass size={14} /> Time Invested
             </span>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--terminal-cyan)', fontFamily: 'var(--font-mono)' }}>
-              {user?.xp || 1450} Hours Logged
+            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+              {user?.xp || 1450} hrs
             </span>
           </div>
 
@@ -127,26 +187,21 @@ export default function MainLayout({ user, onLogout }) {
               style={{
                 width: '68%',
                 height: '100%',
-                background: 'var(--merged-gold-cyan)',
+                background: 'var(--accent-gradient)',
                 borderRadius: 'var(--radius-full)',
               }}
             />
           </div>
-          <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.4rem', fontStyle: 'italic', fontFamily: 'var(--font-serif)' }}>
-            "Patience transforms fuzzy logic into permanent code."
-          </div>
         </div>
 
         {/* Navigation Section */}
-        <nav style={{ padding: '1rem', flex: 1, overflowY: 'auto' }}>
+        <nav style={{ padding: '0.8rem 1rem', flex: 1, overflowY: 'auto' }}>
           <div style={{ fontSize: '0.68rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.6rem', paddingLeft: '0.5rem' }}>
-            Learning Eras
+            Navigation
           </div>
 
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isSepia = item.era === 'sepia';
-            const isTerminal = item.era === 'terminal';
 
             return (
               <NavLink
@@ -160,15 +215,9 @@ export default function MainLayout({ user, onLogout }) {
                   padding: '0.75rem 0.9rem',
                   borderRadius: 'var(--radius-md)',
                   marginBottom: '0.4rem',
-                  color: isActive
-                    ? (isSepia ? 'var(--sepia-gold)' : isTerminal ? 'var(--terminal-cyan)' : '#f8fafc')
-                    : 'var(--text-secondary)',
-                  backgroundColor: isActive
-                    ? (isSepia ? 'rgba(212, 163, 89, 0.15)' : isTerminal ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.08)')
-                    : 'transparent',
-                  border: isActive
-                    ? (isSepia ? '1px solid var(--sepia-border)' : isTerminal ? '1px solid var(--terminal-border)' : '1px solid var(--merged-border)')
-                    : '1px solid transparent',
+                  color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  backgroundColor: isActive ? 'rgba(255, 255, 255, 0.07)' : 'transparent',
+                  border: isActive ? '1px solid var(--border-color)' : '1px solid transparent',
                   textDecoration: 'none',
                   fontSize: '0.88rem',
                   fontWeight: isActive ? '700' : '500',
@@ -178,18 +227,16 @@ export default function MainLayout({ user, onLogout }) {
                 <Icon size={19} />
                 <div style={{ flex: 1 }}>
                   <div style={{ lineHeight: 1.2 }}>{item.label}</div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: isSepia ? 'var(--font-serif)' : isTerminal ? 'var(--font-mono)' : 'var(--font-sans)' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
                     {item.subtitle}
                   </div>
                 </div>
-                {isSepia && <Feather size={13} style={{ color: 'var(--sepia-gold)', opacity: 0.7 }} />}
-                {isTerminal && <Terminal size={13} style={{ color: 'var(--terminal-cyan)', opacity: 0.7 }} />}
               </NavLink>
             );
           })}
         </nav>
 
-        {/* User Card & Settings */}
+        {/* User Card */}
         <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
           <div
             style={{
@@ -206,8 +253,8 @@ export default function MainLayout({ user, onLogout }) {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                background: 'var(--sepia-gold)',
-                color: '#191512',
+                background: 'var(--accent-gradient)',
+                color: '#000000',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -222,7 +269,7 @@ export default function MainLayout({ user, onLogout }) {
               <div style={{ fontSize: '0.85rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.name || 'Student Scholar'}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--sepia-gold)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 <Database size={11} /> Cloud DB Synced
               </div>
             </div>
@@ -230,7 +277,7 @@ export default function MainLayout({ user, onLogout }) {
             <button
               onClick={() => setIsSettingsOpen(true)}
               style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.3rem' }}
-              title="Settings & Palette"
+              title="Settings"
             >
               <Settings size={18} />
             </button>
@@ -265,7 +312,7 @@ export default function MainLayout({ user, onLogout }) {
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
-            <h2 style={{ fontSize: '1.2rem', fontWeight: '700', fontFamily: 'var(--font-serif)', color: 'var(--sepia-text)' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)' }}>
               {getPageTitle()}
             </h2>
           </div>
@@ -290,24 +337,26 @@ export default function MainLayout({ user, onLogout }) {
               />
             </div>
 
-            {/* Era Status Pill */}
-            <div
+            {/* Theme Indicator Pill */}
+            <button
+              onClick={() => onToggleTheme()}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
+                gap: '0.5rem',
                 padding: '0.4rem 0.9rem',
                 borderRadius: 'var(--radius-full)',
-                backgroundColor: 'rgba(212, 163, 89, 0.12)',
-                border: '1px solid rgba(212, 163, 89, 0.3)',
-                color: 'var(--sepia-gold)',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--accent-primary)',
                 fontSize: '0.78rem',
-                fontFamily: 'var(--font-serif)',
+                cursor: 'pointer',
+                fontWeight: '600'
               }}
             >
-              <Sparkles size={14} />
-              <span>Sepia → Terminal Mastery</span>
-            </div>
+              {isSepia ? <Feather size={14} /> : <Terminal size={14} />}
+              <span>{isSepia ? 'Parchment Mode' : 'Terminal Mode'}</span>
+            </button>
           </div>
         </header>
 
